@@ -12,8 +12,8 @@ def user_home_page():
     with st.sidebar:
         select = option_menu(
             f"Welcome, {user[1]}!",
-            ["User Profile",'Nearby Doctors', "Feedback","Logout"],
-            icons=['person-vcard-fill','plus-lg','hand-thumbs-up' ,'unlock-fill'],
+            ["User Profile",'Predictions','Nearby Doctors', "Feedback","Logout"],
+            icons=['person-vcard-fill','hospital-fill','plus-lg','hand-thumbs-up' ,'unlock-fill'],
             menu_icon="cast",
             default_index=0,
             orientation="vertical",

@@ -12,8 +12,8 @@ def user_home_page():
     with st.sidebar:
         select = option_menu(
             f"Welcome, {user[1]}!",
-            ["User Profile",'Predictions','Nearby Doctors', "Feedback","Logout"],
-            icons=['person-vcard-fill','hospital-fill','plus-lg','hand-thumbs-up' ,'unlock-fill'],
+            ["User Profile",'Prediction','Nearby Doctors', "Feedback","Logout"],
+            icons=['person-vcard-fill','cloud-upload','plus-lg','hand-thumbs-up' ,'unlock-fill'],
             menu_icon="cast",
             default_index=0,
             orientation="vertical",
@@ -219,6 +219,72 @@ def user_home_page():
                     st.success("Thank you for reaching out! We'll get back to you soon.")
                 else:
                     st.error("Please fill in all fields before submitting.")
+    elif select == 'Prediction':
+        st.markdown(
+            """
+            <style>
+            /* Apply background image to the main content area */
+            .main {
+                background-color: #a5e7fa;
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
+        info = pd.read_csv('./dataset.csv')
+        info['Albumin_and_Globulin_Ratio'].fillna(info['Albumin_and_Globulin_Ratio'].median(),inplace=True)
+        # info.isna().sum() 
+        from sklearn import tree
+        from sklearn.model_selection import train_test_split
+
+        # info.info() # info
+
+        dt = tree.DecisionTreeClassifier()
+        #  rename 
+        info.rename(columns ={'Dataset':'Target'},inplace=True)
+
+
+        # # In[81]:
+
+
+        X = info.drop('Target',axis=1)
+        y = info['Target']
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+        dt.fit(X_train,y_train)
+        col1,col2,col3 = st.columns([1,8,1])
+        col2.title("Liver Disease Prediction")
+        with st.form('Prediction'):
+            col1,col2 = st.columns(2)
+            sex=col1.selectbox('Select Gender', ['Male','Female'])
+            if sex=='Male':
+                Sex=1
+            else:
+                Sex=2
+            age = col2.slider('Select Age', 0, 100, 25) 
+            col1,col2 = st.columns(2)
+            Total_Bilirubin = col1.number_input("Enter your Total_Bilirubin") # 3
+            Direct_Bilirubin = col2.number_input("Enter your Direct_Bilirubin")# 4
+            Alkaline_Phosphotase = col1.number_input("Enter your Alkaline_Phosphotase") # 5
+            Alamine_Aminotransferase = col2.number_input("Enter your Alamine_Aminotransferase") # 6
+            Aspartate_Aminotransferase = col1.number_input("Enter your Aspartate_Aminotransferase") # 7
+            Total_Protiens = col2.number_input("Enter your Total_Protiens")# 8
+            Albumin = col1.number_input("Enter your Albumin") # 9
+            Albumin_and_Globulin_Rati = col2.number_input("Enter your Albumin_and_Globulin_Ratio") # 10 
+
+            if st.form_submit_button('Submit',type='primary'):
+                results = dt.predict([[Sex,age,Total_Bilirubin,Direct_Bilirubin,Alkaline_Phosphotase,Alamine_Aminotransferase,Aspartate_Aminotransferase
+                                ,Total_Protiens,Albumin,Albumin_and_Globulin_Rati]])
+                
+                for final in results:
+                    if final == 1:
+                        st.error(f'{user[1]} you have a Liver Disease')
+                    else:
+                        st.success(f'{user[1]} you are Healthy')
 
     elif select == 'Logout':
         st.session_state["logged_in"] = False

@@ -13,16 +13,26 @@ def signup_page():
     <style>
     /* Apply background image to the main content area */
     .main {
-        background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReyiG0pG118dpW-JZCkLcrvfKMYo2rdtS-9Q&s");  
+        background-image: url("https://www.ajhospital.in/storage/files/news/Blog/01.jpg");  
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
+        background-color: rgba(255, 255, 255, 0.6);
+        background-blend-mode: overlay;
+
     }
     </style>
     """,
     unsafe_allow_html=True
     )
-    st.title("Sign Up Here!")
+    st.markdown(
+        """
+        <div style="text-align: center; color: red;">
+            <h1 style="font-size: 50px; color:blue;">Sign Up Here !!</h1>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
     with st.form(key="signup_form"):
         name=st.text_input("Name")
         email = st.text_input("Email", key="signup_email")
@@ -34,7 +44,7 @@ def signup_page():
         retyped_password = col2.text_input("Retype Password", type="password", key="signup_retyped_password")
         col1,col2,col3 = st.columns([1,1,1])
         with col1:
-            if st.form_submit_button("Sign Up") and validate_mail(email)!=None and len(password)>=6 and password==retyped_password and age and gender and name:
+            if st.form_submit_button("Sign Up",type='primary') and validate_mail(email)!=None and len(password)>=6 and password==retyped_password and age and gender and name:
                 try:
                     add_user(name,email,age,gender,password)
                     st.success("Account created successfully!!")
@@ -48,5 +58,5 @@ def signup_page():
             elif len(password)<6 and len(password)!=0:
                 st.error("Password must be at least 8 characters long.")
         with col3:
-            if st.form_submit_button("Already have an account?"):
+            if st.form_submit_button("Already have an account?",type='primary'):
                 navigate_to_page("login")
